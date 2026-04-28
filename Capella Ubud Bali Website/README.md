@@ -1,2 +1,0 @@
-# Capella Ubud Bali Website
-
