@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHG – Profile Notes Standards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --gold: #B8974B;
+      --gold-light: #D4B26A;
+      --gold-deep: #8A6E30;
+      --ink: #1A1614;
+      --sand: #F7F3ED;
+      --sand-deep: #E5D9CE;
+      --white: #FDFAF7;
+      --font-serif: 'Playfair Display', serif;
+      --font-body: 'Jost', sans-serif;
+      --nav-h: 72px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-body); color: var(--ink); background: var(--sand); line-height: 1.6; padding-top: var(--nav-h); transition: margin-right 0.3s ease; }
+    body.sidebar-open { margin-right: 320px; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+    .navbar { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: var(--ink); z-index: 1000; border-bottom: 1px solid rgba(184,151,75,0.15); transition: right 0.3s ease; }
+    body.sidebar-open .navbar { right: 320px; }
+    .nav-inner { max-width: 1400px; margin: 0 auto; padding: 0 60px; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: 2px; color: var(--white); text-transform: uppercase; text-decoration: none; }
+    .nav-logo-mark img { width: 16px; height: auto; filter: brightness(0) invert(1); }
+    .nav-logo-text em { font-style: italic; color: var(--gold-light); }
+    .nav-menu { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-link { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(253,250,247,0.6); padding: 8px 16px; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .nav-link i { font-size: 10px; }
+    .nav-link:hover, .nav-link.active { color: var(--gold-light); }
+    .nav-logout { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(253,250,247,0.5); padding: 8px 16px; border: 1px solid rgba(184,151,75,0.3); margin-left: 8px; background: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .nav-logout i { font-size: 10px; }
+    .nav-logout:hover { color: var(--gold); border-color: var(--gold); }
+    .nav-toggle { display: none; background: none; border: none; color: var(--white); font-size: 18px; cursor: pointer; }
+    
+    .more-btn { background: none; border: none; color: rgba(253,250,247,0.6); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; padding: 8px 12px; margin-right: 4px; display: flex; align-items: center; gap: 6px; transition: color 0.2s; font-family: var(--font-body); }
+    .more-btn i { font-size: 10px; }
+    .more-btn:hover { color: var(--gold-light); }
+    
+    @media (max-width: 1100px) {
+      .nav-toggle { display: block; }
+      .nav-menu { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; background: var(--ink); flex-direction: column; padding: 16px 0; gap: 0; }
+      .nav-menu.open { display: flex; }
+      .nav-link { padding: 12px 24px; width: 100%; }
+      .nav-logout { margin: 8px 24px; width: calc(100% - 48px); justify-content: center; }
+      .more-btn { display: none; }
+      .nav-inner { padding: 0 24px; }
+    }
+
+    .sidebar { position: fixed; top: 0; right: -320px; width: 320px; height: 100vh; background: var(--ink); z-index: 1001; transition: right 0.3s ease; overflow-y: auto; box-shadow: -4px 0 20px rgba(0,0,0,0.3); }
+    body.sidebar-open .sidebar { right: 0; }
+    .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(184,151,75,0.2); }
+    .sidebar-header h3 { font-family: var(--font-serif); color: var(--gold-light); font-size: 20px; }
+    .close-sidebar { background: none; border: none; color: var(--white); font-size: 24px; cursor: pointer; transition: color 0.2s; }
+    .close-sidebar:hover { color: var(--gold-light); }
+    .sidebar-menu { list-style: none; padding: 16px 0; }
+    .sidebar-menu li { border-bottom: 1px solid rgba(184,151,75,0.1); }
+    .sidebar-menu li a { display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: rgba(253,250,247,0.7); text-decoration: none; font-size: 14px; transition: all 0.2s; }
+    .sidebar-menu li a i { width: 24px; color: var(--gold-light); font-size: 16px; }
+    .sidebar-menu li a:hover { background: rgba(184,151,75,0.1); color: var(--white); padding-left: 28px; }
+    .sidebar-menu .sidebar-logout { margin-top: 20px; border-top: 1px solid rgba(184,151,75,0.2); }
+    .sidebar-menu .sidebar-logout button { width: 100%; background: none; border: none; display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: rgba(253,250,247,0.7); font-size: 14px; cursor: pointer; transition: all 0.2s; text-align: left; }
+    .sidebar-menu .sidebar-logout button i { width: 24px; color: var(--gold-light); }
+    .sidebar-menu .sidebar-logout button:hover { background: rgba(184,151,75,0.1); color: var(--white); padding-left: 28px; }
+
+    .page-hero {
+      position: relative;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .page-hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('logo/Background-Profile-Atas.jpg') center/cover no-repeat;
+      filter: blur(6px);
+      transform: scale(1.05);
+    }
+    .page-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.5) 100%);
+    }
+    .page-hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      animation: fadeInUp 0.8s ease;
+    }
+    .ornament-row { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; }
+    .ornament-row .ornament-line { width: 60px; height: 1px; background: var(--gold); opacity: 0.8; }
+    .page-hero-eyebrow { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 16px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+    .page-hero-title { font-size: clamp(48px, 6vw, 72px); color: var(--white); font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .page-hero-title em { color: var(--gold-light); font-style: italic; }
+
+    /* SEARCH BAR STYLES */
+    .hero-search { margin-top: 30px; display: flex; justify-content: center; }
+    .search-box-hero { display: flex; align-items: center; background: rgba(255,255,255,0.95); border-radius: 50px; padding: 12px 24px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; }
+    .search-box-hero:focus-within { transform: scale(1.02); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+    .search-box-hero i { color: var(--gold); font-size: 18px; margin-right: 12px; }
+    .search-box-hero input { flex: 1; border: none; outline: none; font-size: 16px; font-family: var(--font-body); background: transparent; color: var(--ink); }
+    .search-box-hero input::placeholder { color: var(--sand-deep); }
+    .search-box-hero .clear-search-hero { background: none; border: none; color: var(--sand-deep); cursor: pointer; font-size: 18px; padding: 4px 8px; transition: color 0.2s; }
+    .search-box-hero .clear-search-hero:hover { color: var(--gold); }
+    .search-stats-hero { font-size: 12px; color: var(--gold-light); margin-top: 12px; text-align: center; }
+    .search-highlight { background-color: rgba(184,151,75,0.3); border-radius: 2px; padding: 0 2px; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
+    @media (max-width: 1024px) { .container { padding: 0 40px; } }
+    @media (max-width: 768px) { .container { padding: 0 24px; } }
+
+    .page-main { background: var(--sand); }
+    .page-main .container { padding-top: 70px; padding-bottom: 80px; }
+
+    .section-card { background: var(--white); padding: 40px 48px; margin-bottom: 48px; border-left: 6px solid var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .section-card h2 { font-size: 32px; font-family: var(--font-serif); color: var(--ink); margin-bottom: 28px; font-weight: 600; }
+    .section-card h2 i { color: var(--gold); margin-right: 12px; }
+    .section-card p { font-size: 18px; color: var(--ink); margin-bottom: 24px; line-height: 1.7; text-align: justify; }
+    .section-card h3 { font-size: 24px; font-family: var(--font-serif); color: var(--gold); margin: 24px 0 16px 0; }
+    .section-card h4 { font-size: 20px; font-family: var(--font-serif); color: var(--ink); margin: 20px 0 12px 0; }
+
+    .bullet-list { list-style: none; margin: 20px 0; }
+    .bullet-list li { padding: 8px 0; padding-left: 24px; position: relative; color: var(--ink); font-size: 17px; line-height: 1.5; text-align: justify; }
+    .bullet-list li:before { content: "•"; color: var(--gold); position: absolute; left: 0; font-weight: bold; font-size: 18px; }
+
+    .step-list { list-style: none; margin: 20px 0; }
+    .step-list li { padding: 8px 0; padding-left: 28px; position: relative; color: var(--ink); font-size: 17px; line-height: 1.5; text-align: justify; }
+    .step-list li:before { content: "→"; color: var(--gold); position: absolute; left: 0; font-weight: bold; font-size: 18px; }
+
+    .preference-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 16px; }
+    .preference-table th { background: var(--ink); color: var(--gold-light); padding: 14px 20px; text-align: left; font-weight: 700; text-transform: uppercase; font-size: 14px; border: 1px solid var(--sand-deep); }
+    .preference-table td { padding: 14px 20px; border: 1px solid var(--sand-deep); color: var(--ink); vertical-align: top; font-size: 15px; }
+    .preference-table tr:hover td { background: var(--sand); }
+
+    .image-gallery { display: flex; gap: 20px; flex-wrap: wrap; margin: 20px 0; justify-content: flex-start; }
+    .clickable-img { max-width: 100%; height: auto; max-height: 350px; cursor: pointer; border-radius: 8px; border: 1px solid var(--sand-deep); transition: transform 0.2s; object-fit: contain; background: var(--white); }
+    .clickable-img:hover { transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+    .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.9); cursor: pointer; }
+    .modal-content { margin: auto; display: block; max-width: 90%; max-height: 90%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    .close-modal { position: absolute; top: 20px; right: 35px; color: var(--gold-light); font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; z-index: 10000; }
+    .close-modal:hover { color: var(--white); }
+    .no-scrollbar { overflow: hidden; }
+
+    .note-box { background: var(--sand); padding: 20px 28px; border-left: 4px solid var(--gold); margin: 20px 0; border-radius: 0 8px 8px 0; }
+    .note-box p { margin-bottom: 8px; font-size: 16px; }
+
+    .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0; }
+    @media (max-width: 768px) { .two-column { grid-template-columns: 1fr; } }
+
+    .footer { background: var(--ink); padding: 60px 0 40px; border-top: 1px solid rgba(184,151,75,0.15); }
+    .footer-inner { text-align: center; }
+    .footer-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
+    .footer-logo-icon img { width: 18px; height: auto; filter: brightness(0) invert(1); }
+    .footer-logo-text { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); }
+    .footer-logo-text em { color: var(--gold-light); }
+    .footer-property { font-size: 12px; color: var(--gold-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+    .footer-note { font-size: 11px; color: rgba(253,250,247,0.3); margin-bottom: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(253,250,247,0.25); }
+
+    @media (max-width: 768px) {
+      .section-card { padding: 28px; }
+      .section-card h2 { font-size: 26px; }
+      .section-card h3 { font-size: 20px; }
+      .bullet-list li, .step-list li { font-size: 15px; }
+      .section-card p { font-size: 16px; }
+      .preference-table th, .preference-table td { padding: 8px 12px; font-size: 13px; }
+      .clickable-img { max-height: 200px; }
+      body.sidebar-open { margin-right: 0; }
+      body.sidebar-open .navbar { right: 0; }
+      .sidebar { width: 280px; right: -280px; }
+      body.sidebar-open .sidebar { right: 0; }
+      .page-hero { height: 420px; }
+      .search-box-hero { max-width: 90%; padding: 10px 18px; }
+      .search-box-hero input { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+    function checkAuth() { const session = localStorage.getItem('chg_auth_session'); if (!session) window.location.replace('index.html'); }
+    function handleLogout() { localStorage.removeItem('chg_auth_session'); window.location.replace('index.html'); }
+    function toggleNav() { document.getElementById('navMenu').classList.toggle('open'); }
+    checkAuth();
+
+    function openSidebar() { document.body.classList.add('sidebar-open'); }
+    function closeSidebar() { document.body.classList.remove('sidebar-open'); }
+
+    function openModal(imgSrc) {
+      const modal = document.getElementById('imageModal');
+      const modalImg = document.getElementById('modalImage');
+      modal.style.display = 'block';
+      modalImg.src = imgSrc;
+      document.body.classList.add('no-scrollbar');
+    }
+    function closeModal() { 
+      document.getElementById('imageModal').style.display = 'none';
+      document.body.classList.remove('no-scrollbar');
+    }
+
+    // SEARCH FUNCTIONALITY
+    let currentSearchTerm = '';
+
+    function searchContent() {
+      const searchTerm = document.getElementById('heroSearchInput').value.toLowerCase().trim();
+      currentSearchTerm = searchTerm;
+      const sections = document.querySelectorAll('.section-card');
+      let matchCount = 0;
+      
+      document.querySelectorAll('.search-highlight').forEach(el => {
+        const parent = el.parentNode;
+        parent.replaceChild(document.createTextNode(el.textContent), el);
+        parent.normalize();
+      });
+      
+      if (searchTerm === '') {
+        sections.forEach(section => { section.style.display = 'block'; });
+        document.getElementById('heroSearchStats').textContent = '';
+        return;
+      }
+      
+      sections.forEach(section => {
+        const text = section.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+          section.style.display = 'block';
+          matchCount++;
+          highlightTextInElement(section, searchTerm);
+        } else {
+          section.style.display = 'none';
+        }
+      });
+      
+      const statsText = matchCount === 1 ? '1 section found' : `${matchCount} sections found`;
+      document.getElementById('heroSearchStats').textContent = matchCount > 0 ? statsText : 'No sections found';
+    }
+    
+    function highlightTextInElement(element, term) {
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, {
+        acceptNode: function(node) {
+          if (node.parentElement && (node.parentElement.tagName === 'SCRIPT' || node.parentElement.classList?.contains('search-highlight'))) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+      
+      textNodes.forEach(node => {
+        const text = node.textContent;
+        const lowerText = text.toLowerCase();
+        let index = lowerText.indexOf(term);
+        if (index !== -1) {
+          const before = text.slice(0, index);
+          const match = text.slice(index, index + term.length);
+          const after = text.slice(index + term.length);
+          
+          const fragment = document.createDocumentFragment();
+          if (before) fragment.appendChild(document.createTextNode(before));
+          const mark = document.createElement('span');
+          mark.className = 'search-highlight';
+          mark.textContent = match;
+          fragment.appendChild(mark);
+          if (after) fragment.appendChild(document.createTextNode(after));
+          
+          node.parentNode.replaceChild(fragment, node);
+        }
+      });
+    }
+    
+    function clearHeroSearch() {
+      document.getElementById('heroSearchInput').value = '';
+      document.getElementById('heroSearchStats').textContent = '';
+      const sections = document.querySelectorAll('.section-card');
+      sections.forEach(section => { section.style.display = 'block'; });
+      document.querySelectorAll('.search-highlight').forEach(el => {
+        const parent = el.parentNode;
+        parent.replaceChild(document.createTextNode(el.textContent), el);
+        parent.normalize();
+      });
+    }
+    
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    }
+
+    window.onload = function() {
+      const searchInput = document.getElementById('heroSearchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', debounce(searchContent, 300));
+      }
+    };
+  </script>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="home.html" class="nav-logo"><span class="nav-logo-mark"><img src="logo/bintang-capella.png" alt="star"></span><span class="nav-logo-text">CHG <em>Reservations</em></span></a>
+      <button class="nav-toggle" onclick="toggleNav()"><i class="fa-solid fa-bars"></i></button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="mission.html" class="nav-link"><i class="fa-solid fa-star"></i> Mission</a></li>
+        <li><a href="data-entry.html" class="nav-link"><i class="fa-solid fa-database"></i> Data Entry</a></li>
+        <li><a href="vip.html" class="nav-link"><i class="fa-solid fa-crown"></i> VIP Code</a></li>
+        <li><a href="blacklist.html" class="nav-link"><i class="fa-solid fa-ban"></i> Blacklist</a></li>
+        <li><a href="aspire.html" class="nav-link"><i class="fa-solid fa-phone"></i> Aspire</a></li>
+        <li><a href="revenue.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Revenue</a></li>
+        <li><button class="more-btn" onclick="openSidebar()"><i class="fa-solid fa-bars"></i> More</button></li>
+        <li><button class="nav-logout" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header"><h3>Menu</h3><button class="close-sidebar" onclick="closeSidebar()">&times;</button></div>
+    <ul class="sidebar-menu">
+      <li><a href="home.html"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="mission.html"><i class="fa-solid fa-star"></i> Mission</a></li>
+      <li><a href="data-entry.html"><i class="fa-solid fa-database"></i> Data Entry</a></li>
+      <li><a href="vip.html"><i class="fa-solid fa-crown"></i> VIP Code</a></li>
+      <li><a href="blacklist.html"><i class="fa-solid fa-ban"></i> Blacklist</a></li>
+      <li><a href="aspire.html"><i class="fa-solid fa-phone"></i> Aspire</a></li>
+      <li><a href="revenue.html"><i class="fa-solid fa-chart-line"></i> Revenue</a></li>
+      <li><a href="market.html"><i class="fa-solid fa-chart-pie"></i> Market</a></li>
+      <li><a href="opera-cloud.html"><i class="fa-solid fa-cloud"></i> Opera Cloud</a></li>
+      <li><a href="profile-notes.html" class="active"><i class="fa-solid fa-note-sticky"></i> Profile Notes</a></li>
+      <li><a href="emails.html"><i class="fa-solid fa-envelope"></i> Emails</a></li>
+      <li class="sidebar-logout"><button onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
+    </ul>
+  </div>
+
+  <div id="imageModal" class="modal" onclick="closeModal()">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="modalImage">
+  </div>
+
+  <section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <div class="ornament-row">
+        <div class="ornament-line"></div>
+        <img src="logo/bintang-capella.png" alt="star" style="width: 24px; height: auto; filter: brightness(0) invert(1);">
+        <div class="ornament-line"></div>
+      </div>
+      <p class="page-hero-eyebrow">Personalization Excellence</p>
+      <h1 class="page-hero-title">Profile <em>Notes</em></h1>
+      
+      <div class="hero-search">
+        <div class="search-box-hero">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="heroSearchInput" placeholder="Search Profile Notes... (Guest Recognition, Preferences, Opera Cloud, etc.)">
+          <button class="clear-search-hero" onclick="clearHeroSearch()"><i class="fa-solid fa-times-circle"></i></button>
+        </div>
+      </div>
+      <div class="search-stats-hero" id="heroSearchStats"></div>
+    </div>
+  </section>
+
+  <main class="page-main">
+    <div class="container">
+
+      <!-- Introduction -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-circle-info"></i> Profile Notes</h2>
+        <p>Personalised service has evolved beyond just knowing what our guest likes and dislikes. Gone are the days that we collect simple information such as "guest wants rooms on high floors", "near elevator" and pillow types. We want to take a step further to capture preferences that are deeper and richer in meaning. Just like in our Service Culture and Philosophy.</p>
+        <p>Identifying and collecting preferences is an important task for every colleague in every Department to record, aligning us back with our second service culture pillar <strong>'Relationship Building'</strong> which states "we are empowered to make each guest's stay tailored and consistent with our guest's preferences".</p>
+        <p>Two systems should be used to record the preferences – <strong>Unifocus</strong> and <strong>Opera Cloud</strong></p>
+        
+        <h3>Procedure:</h3>
+        <ul class="step-list">
+          <li>Guest Recognition Framework</li>
+          <li>6 Components to Building Guest Recognition</li>
+          <li>Profile Notes in Opera Cloud</li>
+          <li>Capella's Categories of Preferences</li>
+          <li>Additional Note Types in Opera Cloud</li>
+          <li>Recording Preferences via Unifocus</li>
+          <li>Tallying Preferences onto CTE</li>
+        </ul>
+      </div>
+
+      <!-- GUEST RECOGNITION FRAMEWORK -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-crown"></i> GUEST RECOGNITION FRAMEWORK</h2>
+        <div class="image-gallery">
+          <img src="logo/1profile.png" class="clickable-img" alt="Guest Recognition Framework" onclick="openModal(this.src)">
+        </div>
+        
+        <p>There are 3 steps to guest recognition and this framework is called <strong>'The S-cube to Guest Recognition'</strong>:</p>
+        <ul class="bullet-list">
+          <li><strong>See Me</strong></li>
+          <li><strong>Share Me</strong></li>
+          <li><strong>Surprise Me</strong></li>
+        </ul>
+        
+        <h3>See Me:</h3>
+        <p>In this stage, colleagues can obtain guest information through pre-arrival communications (telephone calls, emails, PAC surveys, information found on the reservation), or when they are on property such as with face-to-face interactions, guest requests/jobs, management cocktail events, daily Rituals and Capella Moments.</p>
+        <p>During guest engagements or interactions, we should observe and collect meaningful information, including but not limited to their habits and aversions, dietary requirements or allergies, F&B preferences, interests, activities, as well as background information (family's names, children's ages, celebration and milestone dates, personality, communication style, business title, pet's names).</p>
+        
+        <h3>Share Me:</h3>
+        <p>After collecting this information, the 2nd step is to 'Share Me' which refers to sharing the recently collected 'preference' (AKA 'golden nugget' for Forbes, or merely guest information) with colleagues.</p>
+        <p>The platforms used to share this information include:</p>
+        <ul class="bullet-list">
+          <li>Opera Cloud profile notes</li>
+          <li>Unifocus job for 'update guest preferences'</li>
+          <li>Line-ups</li>
+          <li>Afternoon Operations Meeting</li>
+        </ul>
+        
+        <h3>Surprise Me:</h3>
+        <p>The quality of data and its richness is only valuable if we correctly use it during a guest's stay. The final step in this framework is 'Surprise Me' which allows colleagues the opportunity to show the guest we know who they are, as well as what their preferences are so we can surprise and delight them.</p>
+        <p>The focus of this step is to take initiative and be proactive with requests they've made:</p>
+        <ul class="bullet-list">
+          <li>Tentatively book restaurant / program reservations if you know what preferred times are</li>
+          <li>Share their anniversary dates on CTE so all departments can congratulate a guest</li>
+        </ul>
+        <p>Capella Ambassadors should know the guest and be able to anticipate their requests or give recommendations based on our knowledge of them. As with Forbes Travel Guide, all actions should contain a <strong>'+1 Service'</strong> to demonstrate our graciousness and thoughtfulness.</p>
+      </div>
+
+      <!-- 6 COMPONENTS TO BUILDING GUEST RECOGNITION -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-puzzle-piece"></i> 6 COMPONENTS TO BUILDING GUEST RECOGNITION</h2>
+        <div class="image-gallery">
+          <img src="logo/2profile.png" class="clickable-img" alt="6 Components" onclick="openModal(this.src)">
+        </div>
+      </div>
+
+      <!-- PROFILE NOTES IN OPERA CLOUD -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-cloud"></i> PROFILE NOTES IN OPERA CLOUD</h2>
+        <p>Until we are able to create a system that captures global profile notes and syncs all properties' notes into Opera Cloud directly, we use Cendyn as a CRM to access guest profiles.</p>
+        
+        <p><strong>Only the following Profile Note Types in Opera Cloud can be synced into Cendyn:</strong></p>
+        <ul class="bullet-list">
+          <li><strong>BKG</strong> - Background Notes (do not use BAC)</li>
+          <li><strong>ALG</strong> - Allergy (do not use ALE)</li>
+          <li><strong>ACT</strong> - Activities</li>
+          <li><strong>HSK</strong> - Housekeeping</li>
+          <li><strong>HAB</strong> - Habits & Aversions</li>
+          <li><strong>FB</strong> - Food & Beverage</li>
+        </ul>
+        
+        <p><strong>The below Profile Note Types can still be used at Property Level:</strong></p>
+        <ul class="bullet-list">
+          <li><strong>GEN</strong> - General Notes</li>
+          <li><strong>RES</strong> - Reservation Notes</li>
+          <li><strong>PAS</strong> - Culturist Notes</li>
+          <li><strong>PRO</strong> - Property Notes</li>
+        </ul>
+        
+        <p><strong>If the note is relevant for all properties, add a GLOBAL NOTE.</strong></p>
+        <ul class="bullet-list">
+          <li>You must <strong>untick 'Internal'</strong></li>
+          <li>Change <strong>'Available In' to 'Global'</strong> not 'Property'</li>
+        </ul>
+        <p>If you save the note as 'Internal', notes cannot be synced into Cendyn onto the guest's global profile.</p>
+        
+        <div class="image-gallery">
+          <img src="logo/3profile.png" class="clickable-img" alt="Global Note Settings" onclick="openModal(this.src)">
+          <img src="logo/4profile.png" class="clickable-img" alt="Global Note Best Practice" onclick="openModal(this.src)">
+        </div>
+        
+        <h3>Global Notes:</h3>
+        <ul class="bullet-list">
+          <li>Combine all information relating to that Note Type into 1 profile note</li>
+          <li><strong>Note Titles:</strong> Background – Personal, Background – Professional, Activities, Allergies, F&B, Housekeeping, Habits & Aversions</li>
+          <li>Separate sentences with full stops</li>
+          <li><strong>//</strong> to be used at the conclusion of your input & sign-off</li>
+        </ul>
+        
+        <h3>Property Notes:</h3>
+        <ul class="bullet-list">
+          <li>Can separate notes into different 'types' (e.g. Reservation Notes, Culturist Notes, Property Notes) if relevant</li>
+        </ul>
+      </div>
+
+      <!-- CAPELLA'S CATEGORIES OF PREFERENCES - BACKGROUND -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-database"></i> CAPELLA'S CATEGORIES OF PREFERENCES</h2>
+        
+        <h3>Background:</h3>
+        <p>This information can be treated as unlocking the first layer of getting to know a new person.</p>
+        
+        <table class="preference-table">
+          <thead><tr><th>EXAMPLES</th><th>VERBIAGE QUESTIONS</th></tr></thead>
+          <tbody>
+            <tr><td>Preferred Name & Name Pronunciation</td><td>• What is your full name?<br>• How would you prefer to be addressed as?</td></tr>
+            <tr><td>Business Title & Company Name</td><td>• Where do you work?</td></tr>
+            <tr><td>Partner's / Childrens' / Pet's Names</td><td>• How many people are there in your family?<br>• Do you own any pets? What are their names?</td></tr>
+            <tr><td>Birthday / Anniversary Date</td><td>• When is your birthday?<br>• What are some special milestone dates in your life?</td></tr>
+            <tr><td>VIP Status Information</td><td></td></tr>
+            <tr><td>Languages / Preferred Language to Communicate</td><td></td></tr>
+            <tr><td>Preferred Method of Communication</td><td></td></tr>
+            <tr><td>Location of Residence</td><td></td></tr>
+          </tbody>
+        </table>
+        
+        <div class="image-gallery">
+          <img src="logo/5profile.png" class="clickable-img" alt="Background Example 1" onclick="openModal(this.src)">
+          <img src="logo/6profile.png" class="clickable-img" alt="Background Example 2" onclick="openModal(this.src)">
+          <img src="logo/7profile.png" class="clickable-img" alt="Background Example 3" onclick="openModal(this.src)">
+        </div>
+        <p><strong>This information should be saved as a 'Global' Profile Note.</strong></p>
+        
+        <!-- Allergy -->
+        <h3>Allergy:</h3>
+        <p>An allergy refers to something that can cause a harmful reaction to a person if they come into contact with it. It is not only limited to F&B, it could be a physical item or substance within the environment (e.g. pollens, animal furs, plants).</p>
+        <p>Allergies can be considered sensitive information and we should be discreet about sharing the information. Despite this being the case, it is crucial to obtain information as it concerns the guest's health & safety (it could be life-threatening).</p>
+        <p>Even when we have the information saved within the guest's profile, we must never assume and always validate the information again face-to-face. It is even more important to announce to guests that whilst our colleagues have noted their allergies, the guest's must still highlight their allergies when dining at a different outlet.</p>
+        <p><strong>It is not acceptable to write 'no seafood' – it must be clarified if this is an allergy or preference.</strong></p>
+        
+        <table class="preference-table">
+          <thead><tr><th>EXAMPLES</th><th>VERBIAGE QUESTIONS</th></tr></thead>
+          <tbody>
+            <tr><td>F&B: Nut / egg / seafood allergy</td><td>• Do you have any dietary requirements we should be aware of?</td></tr>
+            <tr><td>F&B: Gluten / lactose intolerance</td><td>• May I clarify if this is a preference or an allergy?</td></tr>
+            <tr><td>HSK: Feather / furs allergy</td><td>• May I confirm if this allergy is anaphylaxis?</td></tr>
+          </tbody>
+        </table>
+        
+        <div class="image-gallery">
+          <img src="logo/8profile.png" class="clickable-img" alt="Allergy Example 1" onclick="openModal(this.src)">
+          <img src="logo/9profile.png" class="clickable-img" alt="Allergy Example 2" onclick="openModal(this.src)">
+          <img src="logo/10profile.png" class="clickable-img" alt="Allergy Example 3" onclick="openModal(this.src)">
+        </div>
+        <p><strong>This information should be saved as a 'Global' Profile Note.</strong></p>
+        
+        <!-- Activities -->
+        <h3>Activities:</h3>
+        <p>The 'Activities' note category refers to interests or hotel programmes that the guest has indicated they would like to participate in.</p>
+        <p>In this profile note category, update what activities the guest has participated in. This could also include itineraries you have planned for the guest during their stay, as well as Capella Moments, Rituals or Curates programs they have attended.</p>
+        
+        <table class="preference-table">
+          <thead><tr><th>EXAMPLES</th><th>VERBIAGE QUESTIONS</th></tr></thead>
+          <tbody>
+            <tr><td>Rituals, Moments, Curates Programs</td><td>• What are your hobbies or interests when travelling?</td></tr>
+            <tr><td>Children's Programming</td><td>• You previously attended XXX, would you like us to confirm a reservation again, or search an alternate venue?</td></tr>
+            <tr><td>Tour Itineraries</td><td></td></tr>
+            <tr><td>Favourite Travel Destinations</td><td></td></tr>
+            <tr><td>Preferred Restaurants in Sydney</td><td></td></tr>
+            <tr><td>Spa Treatments Preference</td><td></td></tr>
+            <tr><td>Skin Type (for Spa Treatments)</td><td></td></tr>
+          </tbody>
+        </table>
+        
+        <div class="image-gallery">
+          <img src="logo/11profile.png" class="clickable-img" alt="Activities Example 1" onclick="openModal(this.src)">
+          <img src="logo/12profile.png" class="clickable-img" alt="Activities Example 2" onclick="openModal(this.src)">
+          <img src="logo/13profile.png" class="clickable-img" alt="Activities Example 3" onclick="openModal(this.src)">
+        </div>
+        <p><strong>This information should be saved as a 'Property' Profile Note with 'Internal' selected.</strong></p>
+        
+        <!-- Housekeeping -->
+        <h3>Housekeeping:</h3>
+        <p>A Housekeeping profile note category refers to how guests prefer their room to be setup. Typically this is information that a guest informs us of, however Room Attendants, House Runners and Supervisors should also be able to observe and 'read' the room to help us understand some guest preferences.</p>
+        
+        <table class="preference-table">
+          <thead><tr><th>EXAMPLES</th><th>VERBIAGE QUESTIONS</th></tr></thead>
+          <tbody>
+            <tr><td>A/C Temperature (Fahrenheit or Celsius?)</td><td>• Is this a preference you would like us to keep on file for your future stays?</td></tr>
+            <tr><td>Robe and Slipper Sizes</td><td>• Is there a preferred time you'd like your room serviced daily?</td></tr>
+            <tr><td>Bedding (Top Sheet, Blanket, Extra Doona)</td><td>• We have multiple pillow types available, what is your preference?</td></tr>
+            <tr><td>Types of Pillows (Feather, Foam, Firm, Latex, Memory Foam, Microfibre, Pregnancy, U-Shape)</td><td>• We have a bath soap available or the bath gel, what would you like a replenishment of?</td></tr>
+            <tr><td>Room Servicing Times (Daily & Evening Service)</td><td>• In each room is a M & a L sized bathrobe. Would you prefer only 1 size is kept on file for your future stays?</td></tr>
+            <tr><td>Towel Preferences</td><td></td></tr>
+            <tr><td>Side of the Bed they Sleep On</td><td></td></tr>
+            <tr><td>Number of Water Bottles / Coat Hangers</td><td></td></tr>
+            <tr><td>Number of Laundry Cards / Shoe Shine Bags</td><td></td></tr>
+          </tbody>
+        </table>
+        
+        <div class="image-gallery">
+          <img src="logo/14profile.png" class="clickable-img" alt="Housekeeping Example 1" onclick="openModal(this.src)">
+          <img src="logo/15profile.png" class="clickable-img" alt="Housekeeping Example 2" onclick="openModal(this.src)">
+          <img src="logo/16profile.png" class="clickable-img" alt="Housekeeping Example 3" onclick="openModal(this.src)">
+        </div>
+        <p><strong>This information can be saved as a 'Global' or 'Property' Profile Note.</strong></p>
+        
+        <!-- Food and Beverage -->
+        <h3>Food and Beverage:</h3>
+        <p>Basic information such as dietary requirements and preferences are usually shared at the beginning or even before the guest enters the outlet. However, guests typically spend 90 minutes dining at restaurants, and we have the opportunity to observe and obtain multiple preferences in this time.</p>
+        <p>Do not include allergies in this profile note category (there is a separate category for this), and we must ensure we contextualise and qualify the data being collected so it remains specific.</p>
+        
+        <table class="preference-table">
+          <thead><tr><th>EXAMPLES</th><th>VERBIAGE QUESTIONS</th></tr></thead>
+          <tbody>
+            <tr><td>Preferred Beverage</td><td>• Is this a preference you would like us to keep on file for your future stays?</td></tr>
+            <tr><td>F&B Aversions</td><td>• Do you have a preferred wine?</td></tr>
+            <tr><td>Types of Cuisines / Preferred Foods</td><td>• With this beverage, when do you mainly enjoy drinking this? (e.g. at the pool, before dinner, after dinner, only socially, after the gym, at breakfast)</td></tr>
+            <tr><td>Types of Snacks</td><td>• We have noticed that you haven't consumed the welcome amenity on the previous stays, is there another amenity you'd enjoy more?</td></tr>
+            <tr><td>Welcome Amenities</td><td>• Would you like us to remove any items from the personal bar?</td></tr>
+            <tr><td>Diabetic Information</td><td>• Would you like us to store any items for you in our own fridges on this stay?</td></tr>
+            <tr><td>Halal / Kosher Dietary Requirement</td><td></td></tr>
+            <tr><td>Vegan / Pescatarian / Vegetarian</td><td></td></tr>
+            <tr><td>Personal Bar Setup (Alcoholic Items)</td><td></td></tr>
+          </tbody>
+        </table>
+        
+        <p><strong>This information can be saved as a 'Global' or 'Property' Profile Note.</strong></p>
+      </div>
+
+      <!-- OTHER NOTE TYPES ON OPERA CLOUD -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-note-sticky"></i> OTHER NOTE TYPES ON OPERA CLOUD</h2>
+        
+        <h3>Reservation Notes:</h3>
+        <p>Reservation notes should be used for any information relating to the guest's reservation at hotel-level.</p>
+        <p>These should be marked as 'Property' Notes, with the title including the type of information it includes.</p>
+        
+        <table class="preference-table">
+          <thead><tr><th>EXAMPLES</th><th>VERBIAGE QUESTIONS</th></tr></thead>
+          <tbody>
+            <tr><td>Smoking Issues</td><td>• Is this a preference you would like us to keep on file for your future stays?</td></tr>
+            <tr><td>Allocation Requests</td><td>• "Guest has been charged $800 for previously smoking in a guest room"</td></tr>
+            <tr><td>Meet & Greet Preference</td><td>• "Guest enjoys recognition & has shared feedback he enjoys meeting GM, DoR or DoFB on arrival"<br>• "Guest would prefer an allocation with a view and lots of natural light"</td></tr>
+          </tbody>
+        </table>
+        
+        <h3>General Notes:</h3>
+        <p>General notes can be used for summary of guest feedback from ReviewPro.</p>
+        <p>These should be marked as 'Property' Notes, with the title including the type of information it includes.</p>
+        
+        <table class="preference-table">
+          <thead><tr><th>EXAMPLES</th><th>PROFILE NOTE EXAMPLES</th></tr></thead>
+          <tbody>
+            <tr><td>Guest Feedback</td><td>"Guest rated 10/10 for OSAT and 9/10 for NPS on stay in September 2023 (COMJG/12092023)"</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- RECORDING PREFERENCES VIA KNOWCROSS -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-phone-volume"></i> RECORDING PREFERENCES VIA KNOWCROSS</h2>
+        <p>We are pleased to confirm our latest KnowCross job <strong>'Update Guest Preferences'</strong> which we encourage everyone to use daily.</p>
+        
+        <div class="image-gallery">
+          <img src="logo/17profile.png" class="clickable-img" alt="KnowCross Job" onclick="openModal(this.src)">
+          <img src="logo/18profile.png" class="clickable-img" alt="Manual Spreadsheet" onclick="openModal(this.src)">
+        </div>
+        
+        <h3>Process:</h3>
+        <ul class="step-list">
+          <li>As soon as you learn a new preference / allergy / piece of information about a guest</li>
+          <li>Log it in the remarks section of the 'Update Guest Preferences' job in KC</li>
+          <li>The Communications Team will create a profile note / trace in Opera Cloud and complete the job</li>
+          <li>Departments who record preferences via KnowCross will have Communications tally their results each day and update into CTE</li>
+          <li>Departments who update Opera Cloud themselves with their own preferences, will need to update the Excel Document within the CTE folder with their own tally of today's results</li>
+        </ul>
+      </div>
+
+      <!-- TALLYING PREFERENCES ONTO CTE DAILY -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-chart-line"></i> TALLYING PREFERENCES ONTO CTE DAILY</h2>
+        <p>Every month, a new target for Guest Preferences will be created for every Department to achieve (this will be added onto CTE and updated daily).</p>
+        <p>These goals have been determined based on the level of interaction your department has with guests, and your ability to collect these preferences.</p>
+        <p>Between June – September 2023, they will be loosely based on a % of our Hotel Occupancy for the month. As our occupancy grows and our familiarity with this KPI cements, we will look to lower the goal and focus on the quality of goals being captured.</p>
+        
+        <p><strong>Communications will use KC to count your Department's Guest Preferences jobs you've logged at the end of every day.</strong></p>
+        <ul class="bullet-list">
+          <li>Bell Desk</li>
+          <li>Culinary</li>
+          <li>Engineering</li>
+          <li>F&B Outlets</li>
+          <li>Housekeeping</li>
+          <li>Security</li>
+          <li>Spa</li>
+        </ul>
+        
+        <p><strong>For Departments who update their own preferences daily, they will need to complete the tally into the Excel Document directly.</strong></p>
+        <ul class="bullet-list">
+          <li>Communications</li>
+          <li>Culturists</li>
+          <li>Executive Office</li>
+          <li>Front Desk</li>
+          <li>Reservations</li>
+        </ul>
+        
+        <div class="image-gallery">
+          <img src="logo/19profile.png" class="clickable-img" alt="CTE Tally" onclick="openModal(this.src)">
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-inner">
+      <div class="footer-brand"><span class="footer-logo-icon"><img src="logo/bintang-capella.png" alt="star"></span><span class="footer-logo-text">CHG <em>Reservations</em> Standards</span></div>
+      <p class="footer-property">Capella Ubud, Bali</p>
+      <p class="footer-note">Internal Use Only — Authorized Personnel</p>
+      <p class="footer-copy">&copy; 2025 Capella Hotel Group. All rights reserved.</p>
+    </div></div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => { const navbar = document.getElementById('navbar'); if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 20); });
+    document.querySelectorAll('.nav-link').forEach(link => { link.addEventListener('click', () => document.getElementById('navMenu')?.classList.remove('open')); });
+  </script>
+</body>
+</html>

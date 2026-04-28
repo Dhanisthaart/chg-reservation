@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHG – Email Standards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --gold: #B8974B;
+      --gold-light: #D4B26A;
+      --gold-deep: #8A6E30;
+      --ink: #1A1614;
+      --sand: #F7F3ED;
+      --sand-deep: #E5D9CE;
+      --white: #FDFAF7;
+      --font-serif: 'Playfair Display', serif;
+      --font-body: 'Jost', sans-serif;
+      --nav-h: 72px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-body); color: var(--ink); background: var(--sand); line-height: 1.6; padding-top: var(--nav-h); transition: margin-right 0.3s ease; }
+    body.sidebar-open { margin-right: 320px; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+    .navbar { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: var(--ink); z-index: 1000; border-bottom: 1px solid rgba(184,151,75,0.15); transition: right 0.3s ease; }
+    body.sidebar-open .navbar { right: 320px; }
+    .nav-inner { max-width: 1400px; margin: 0 auto; padding: 0 60px; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: 2px; color: var(--white); text-transform: uppercase; text-decoration: none; }
+    .nav-logo-mark img { width: 16px; height: auto; filter: brightness(0) invert(1); }
+    .nav-logo-text em { font-style: italic; color: var(--gold-light); }
+    .nav-menu { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-link { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(253,250,247,0.6); padding: 8px 16px; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .nav-link i { font-size: 10px; }
+    .nav-link:hover, .nav-link.active { color: var(--gold-light); }
+    .nav-logout { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(253,250,247,0.5); padding: 8px 16px; border: 1px solid rgba(184,151,75,0.3); margin-left: 8px; background: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .nav-logout i { font-size: 10px; }
+    .nav-logout:hover { color: var(--gold); border-color: var(--gold); }
+    .nav-toggle { display: none; background: none; border: none; color: var(--white); font-size: 18px; cursor: pointer; }
+    
+    .more-btn { background: none; border: none; color: rgba(253,250,247,0.6); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; padding: 8px 12px; margin-right: 4px; display: flex; align-items: center; gap: 6px; transition: color 0.2s; font-family: var(--font-body); }
+    .more-btn i { font-size: 10px; }
+    .more-btn:hover { color: var(--gold-light); }
+    
+    @media (max-width: 1100px) {
+      .nav-toggle { display: block; }
+      .nav-menu { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; background: var(--ink); flex-direction: column; padding: 16px 0; gap: 0; }
+      .nav-menu.open { display: flex; }
+      .nav-link { padding: 12px 24px; width: 100%; }
+      .nav-logout { margin: 8px 24px; width: calc(100% - 48px); justify-content: center; }
+      .more-btn { display: none; }
+      .nav-inner { padding: 0 24px; }
+    }
+
+    .sidebar { position: fixed; top: 0; right: -320px; width: 320px; height: 100vh; background: var(--ink); z-index: 1001; transition: right 0.3s ease; overflow-y: auto; box-shadow: -4px 0 20px rgba(0,0,0,0.3); }
+    body.sidebar-open .sidebar { right: 0; }
+    .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(184,151,75,0.2); }
+    .sidebar-header h3 { font-family: var(--font-serif); color: var(--gold-light); font-size: 20px; }
+    .close-sidebar { background: none; border: none; color: var(--white); font-size: 24px; cursor: pointer; transition: color 0.2s; }
+    .close-sidebar:hover { color: var(--gold-light); }
+    .sidebar-menu { list-style: none; padding: 16px 0; }
+    .sidebar-menu li { border-bottom: 1px solid rgba(184,151,75,0.1); }
+    .sidebar-menu li a { display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: rgba(253,250,247,0.7); text-decoration: none; font-size: 14px; transition: all 0.2s; }
+    .sidebar-menu li a i { width: 24px; color: var(--gold-light); font-size: 16px; }
+    .sidebar-menu li a:hover { background: rgba(184,151,75,0.1); color: var(--white); padding-left: 28px; }
+    .sidebar-menu .sidebar-logout { margin-top: 20px; border-top: 1px solid rgba(184,151,75,0.2); }
+    .sidebar-menu .sidebar-logout button { width: 100%; background: none; border: none; display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: rgba(253,250,247,0.7); font-size: 14px; cursor: pointer; transition: all 0.2s; text-align: left; }
+    .sidebar-menu .sidebar-logout button i { width: 24px; color: var(--gold-light); }
+    .sidebar-menu .sidebar-logout button:hover { background: rgba(184,151,75,0.1); color: var(--white); padding-left: 28px; }
+
+    .page-hero {
+      position: relative;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .page-hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('logo/Background-Email-Atas.jpg') center/cover no-repeat;
+      filter: blur(6px);
+      transform: scale(1.05);
+    }
+    .page-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.5) 100%);
+    }
+    .page-hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      animation: fadeInUp 0.8s ease;
+    }
+    .ornament-row { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; }
+    .ornament-row .ornament-line { width: 60px; height: 1px; background: var(--gold); opacity: 0.8; }
+    .page-hero-eyebrow { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 16px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+    .page-hero-title { font-size: clamp(48px, 6vw, 72px); color: var(--white); font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .page-hero-title em { color: var(--gold-light); font-style: italic; }
+
+    /* SEARCH BAR STYLES */
+    .hero-search { margin-top: 30px; display: flex; justify-content: center; }
+    .search-box-hero { display: flex; align-items: center; background: rgba(255,255,255,0.95); border-radius: 50px; padding: 12px 24px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; }
+    .search-box-hero:focus-within { transform: scale(1.02); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+    .search-box-hero i { color: var(--gold); font-size: 18px; margin-right: 12px; }
+    .search-box-hero input { flex: 1; border: none; outline: none; font-size: 16px; font-family: var(--font-body); background: transparent; color: var(--ink); }
+    .search-box-hero input::placeholder { color: var(--sand-deep); }
+    .search-box-hero .clear-search-hero { background: none; border: none; color: var(--sand-deep); cursor: pointer; font-size: 18px; padding: 4px 8px; transition: color 0.2s; }
+    .search-box-hero .clear-search-hero:hover { color: var(--gold); }
+    .search-stats-hero { font-size: 12px; color: var(--gold-light); margin-top: 12px; text-align: center; }
+    .search-highlight { background-color: rgba(184,151,75,0.3); border-radius: 2px; padding: 0 2px; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
+    @media (max-width: 1024px) { .container { padding: 0 40px; } }
+    @media (max-width: 768px) { .container { padding: 0 24px; } }
+
+    .page-main { background: var(--sand); }
+    .page-main .container { padding-top: 70px; padding-bottom: 80px; }
+
+    .section-card { background: var(--white); padding: 40px 48px; margin-bottom: 48px; border-left: 6px solid var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .section-card h2 { font-size: 32px; font-family: var(--font-serif); color: var(--ink); margin-bottom: 28px; font-weight: 600; }
+    .section-card h2 i { color: var(--gold); margin-right: 12px; }
+    .section-card p { font-size: 18px; color: var(--ink); margin-bottom: 24px; line-height: 1.7; text-align: justify; }
+
+    .email-card { border: 1px solid var(--sand-deep); border-radius: 12px; margin-bottom: 32px; overflow: hidden; }
+    .email-header { background: var(--ink); color: var(--gold-light); padding: 16px 24px; font-size: 20px; font-weight: 600; font-family: var(--font-serif); }
+    .email-header i { margin-right: 12px; }
+    .email-body { padding: 24px 28px; background: var(--white); }
+    .email-body p { font-size: 16px; margin-bottom: 12px; line-height: 1.6; }
+    .email-body strong { color: var(--gold); }
+    .email-example { background: var(--sand); padding: 20px 24px; border-left: 4px solid var(--gold); margin-top: 16px; border-radius: 0 8px 8px 0; font-family: monospace; font-size: 14px; white-space: pre-wrap; word-break: break-word; }
+    .email-example strong { color: var(--gold); font-family: var(--font-body); }
+
+    .footer { background: var(--ink); padding: 60px 0 40px; border-top: 1px solid rgba(184,151,75,0.15); }
+    .footer-inner { text-align: center; }
+    .footer-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
+    .footer-logo-icon img { width: 18px; height: auto; filter: brightness(0) invert(1); }
+    .footer-logo-text { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); }
+    .footer-logo-text em { color: var(--gold-light); }
+    .footer-property { font-size: 12px; color: var(--gold-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+    .footer-note { font-size: 11px; color: rgba(253,250,247,0.3); margin-bottom: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(253,250,247,0.25); }
+
+    @media (max-width: 768px) {
+      .section-card { padding: 28px; }
+      .section-card h2 { font-size: 26px; }
+      .email-header { font-size: 18px; padding: 12px 18px; }
+      .email-body { padding: 18px 20px; }
+      .email-example { font-size: 12px; padding: 14px 16px; }
+      body.sidebar-open { margin-right: 0; }
+      body.sidebar-open .navbar { right: 0; }
+      .sidebar { width: 280px; right: -280px; }
+      body.sidebar-open .sidebar { right: 0; }
+      .page-hero { height: 420px; }
+      .search-box-hero { max-width: 90%; padding: 10px 18px; }
+      .search-box-hero input { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+    function checkAuth() { const session = localStorage.getItem('chg_auth_session'); if (!session) window.location.replace('index.html'); }
+    function handleLogout() { localStorage.removeItem('chg_auth_session'); window.location.replace('index.html'); }
+    function toggleNav() { document.getElementById('navMenu').classList.toggle('open'); }
+    checkAuth();
+
+    function openSidebar() { document.body.classList.add('sidebar-open'); }
+    function closeSidebar() { document.body.classList.remove('sidebar-open'); }
+
+    // SEARCH FUNCTIONALITY
+    let currentSearchTerm = '';
+
+    function searchContent() {
+      const searchTerm = document.getElementById('heroSearchInput').value.toLowerCase().trim();
+      currentSearchTerm = searchTerm;
+      const sections = document.querySelectorAll('.email-card');
+      let matchCount = 0;
+      
+      document.querySelectorAll('.search-highlight').forEach(el => {
+        const parent = el.parentNode;
+        parent.replaceChild(document.createTextNode(el.textContent), el);
+        parent.normalize();
+      });
+      
+      if (searchTerm === '') {
+        sections.forEach(section => { section.style.display = 'block'; });
+        document.getElementById('heroSearchStats').textContent = '';
+        return;
+      }
+      
+      sections.forEach(section => {
+        const text = section.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+          section.style.display = 'block';
+          matchCount++;
+          highlightTextInElement(section, searchTerm);
+        } else {
+          section.style.display = 'none';
+        }
+      });
+      
+      const statsText = matchCount === 1 ? '1 email type found' : `${matchCount} email types found`;
+      document.getElementById('heroSearchStats').textContent = matchCount > 0 ? statsText : 'No email types found';
+    }
+    
+    function highlightTextInElement(element, term) {
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, {
+        acceptNode: function(node) {
+          if (node.parentElement && (node.parentElement.tagName === 'SCRIPT' || node.parentElement.classList?.contains('search-highlight'))) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+      
+      const textNodes = [];
+      while (walker.nextNode()) textNodes.push(walker.currentNode);
+      
+      textNodes.forEach(node => {
+        const text = node.textContent;
+        const lowerText = text.toLowerCase();
+        let index = lowerText.indexOf(term);
+        if (index !== -1) {
+          const before = text.slice(0, index);
+          const match = text.slice(index, index + term.length);
+          const after = text.slice(index + term.length);
+          
+          const fragment = document.createDocumentFragment();
+          if (before) fragment.appendChild(document.createTextNode(before));
+          const mark = document.createElement('span');
+          mark.className = 'search-highlight';
+          mark.textContent = match;
+          fragment.appendChild(mark);
+          if (after) fragment.appendChild(document.createTextNode(after));
+          
+          node.parentNode.replaceChild(fragment, node);
+        }
+      });
+    }
+    
+    function clearHeroSearch() {
+      document.getElementById('heroSearchInput').value = '';
+      document.getElementById('heroSearchStats').textContent = '';
+      const sections = document.querySelectorAll('.email-card');
+      sections.forEach(section => { section.style.display = 'block'; });
+      document.querySelectorAll('.search-highlight').forEach(el => {
+        const parent = el.parentNode;
+        parent.replaceChild(document.createTextNode(el.textContent), el);
+        parent.normalize();
+      });
+    }
+    
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    }
+
+    window.onload = function() {
+      const searchInput = document.getElementById('heroSearchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', debounce(searchContent, 300));
+      }
+    };
+  </script>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="home.html" class="nav-logo"><span class="nav-logo-mark"><img src="logo/bintang-capella.png" alt="star"></span><span class="nav-logo-text">CHG <em>Reservations</em></span></a>
+      <button class="nav-toggle" onclick="toggleNav()"><i class="fa-solid fa-bars"></i></button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="mission.html" class="nav-link"><i class="fa-solid fa-star"></i> Mission</a></li>
+        <li><a href="data-entry.html" class="nav-link"><i class="fa-solid fa-database"></i> Data Entry</a></li>
+        <li><a href="vip.html" class="nav-link"><i class="fa-solid fa-crown"></i> VIP Code</a></li>
+        <li><a href="blacklist.html" class="nav-link"><i class="fa-solid fa-ban"></i> Blacklist</a></li>
+        <li><a href="aspire.html" class="nav-link"><i class="fa-solid fa-phone"></i> Aspire</a></li>
+        <li><a href="revenue.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Revenue</a></li>
+        <li><button class="more-btn" onclick="openSidebar()"><i class="fa-solid fa-bars"></i> More</button></li>
+        <li><button class="nav-logout" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header"><h3>Menu</h3><button class="close-sidebar" onclick="closeSidebar()">&times;</button></div>
+    <ul class="sidebar-menu">
+      <li><a href="home.html"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="mission.html"><i class="fa-solid fa-star"></i> Mission</a></li>
+      <li><a href="data-entry.html"><i class="fa-solid fa-database"></i> Data Entry</a></li>
+      <li><a href="vip.html"><i class="fa-solid fa-crown"></i> VIP Code</a></li>
+      <li><a href="blacklist.html"><i class="fa-solid fa-ban"></i> Blacklist</a></li>
+      <li><a href="aspire.html"><i class="fa-solid fa-phone"></i> Aspire</a></li>
+      <li><a href="revenue.html"><i class="fa-solid fa-chart-line"></i> Revenue</a></li>
+      <li><a href="market.html"><i class="fa-solid fa-chart-pie"></i> Market</a></li>
+      <li><a href="opera-cloud.html"><i class="fa-solid fa-cloud"></i> Opera Cloud</a></li>
+      <li><a href="profile-notes.html"><i class="fa-solid fa-note-sticky"></i> Profile Notes</a></li>
+      <li><a href="emails.html" class="active"><i class="fa-solid fa-envelope"></i> Emails</a></li>
+      <li class="sidebar-logout"><button onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
+    </ul>
+  </div>
+
+  <section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <div class="ornament-row">
+        <div class="ornament-line"></div>
+        <img src="logo/bintang-capella.png" alt="star" style="width: 24px; height: auto; filter: brightness(0) invert(1);">
+        <div class="ornament-line"></div>
+      </div>
+      <p class="page-hero-eyebrow">Communication Standards</p>
+      <h1 class="page-hero-title">Email <em>Standards</em></h1>
+      
+      <div class="hero-search">
+        <div class="search-box-hero">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="heroSearchInput" placeholder="Search email types... (Proposal, Confirmation, Reconfirmation, Cancellation)">
+          <button class="clear-search-hero" onclick="clearHeroSearch()"><i class="fa-solid fa-times-circle"></i></button>
+        </div>
+      </div>
+      <div class="search-stats-hero" id="heroSearchStats"></div>
+    </div>
+  </section>
+
+  <main class="page-main">
+    <div class="container">
+
+      <!-- 1. EMAIL PROPOSAL -->
+      <div class="email-card">
+        <div class="email-header">
+          <i class="fa-solid fa-file-signature"></i> 1. Email Proposal
+        </div>
+        <div class="email-body">
+          <p>Email proposal digunakan untuk mengirimkan penawaran / proposal reservasi kepada calon tamu sebelum booking dikonfirmasi. Berisi detail kamar, tarif, fasilitas, dan informasi penting lainnya.</p>
+          <div class="email-example">
+            <strong>Contoh Email Proposal:</strong><br><br>
+            <strong>Subject:</strong> Reservation Proposal - [Guest Name] - [Property Name]<br><br>
+            Dear Mr./Ms. [Guest Last Name],<br><br>
+            Warmest greetings from [Property Name].<br><br>
+            As per our conversation, we are pleased to propose the following reservation details for your upcoming stay:<br><br>
+            <strong>Guest Name:</strong> [Full Name]<br>
+            <strong>Arrival Date:</strong> [Date]<br>
+            <strong>Departure Date:</strong> [Date]<br>
+            <strong>Number of Nights:</strong> [X] nights<br>
+            <strong>Room Type:</strong> [Room Category]<br>
+            <strong>Rate:</strong> [Currency] [Amount] ++ per night<br>
+            <strong>Inclusions:</strong> Breakfast, Wi-Fi, etc.<br>
+            <strong>Cancellation Policy:</strong> Free cancellation until [Date]<br><br>
+            Please let us know if you wish to proceed with this booking. We look forward to welcoming you to [Property Name].<br><br>
+            Should you have any questions, please do not hesitate to contact us.<br><br>
+            Sincerely,<br>
+            [Your Name]<br>
+            Reservations Department<br>
+            [Property Name]
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. CONFIRMATION LETTER -->
+      <div class="email-card">
+        <div class="email-header">
+          <i class="fa-solid fa-check-circle"></i> 2. Confirmation Letter
+        </div>
+        <div class="email-body">
+          <p>Confirmation letter dikirim setelah booking dikonfirmasi. Berisi detail reservasi yang sudah pasti, nomor konfirmasi, dan informasi penting lainnya.</p>
+          <div class="email-example">
+            <strong>Contoh Confirmation Letter:</strong><br><br>
+            <strong>Subject:</strong> Reservation Confirmation - [Guest Name] - [Confirmation Number]<br><br>
+            Dear Mr./Ms. [Guest Last Name],<br><br>
+            Warmest greetings from [Property Name].<br><br>
+            Thank you for choosing [Property Name]. We are pleased to confirm your reservation as follows:<br><br>
+            <strong>Confirmation Number:</strong> [XXXXXX]<br>
+            <strong>Guest Name:</strong> [Full Name]<br>
+            <strong>Arrival Date:</strong> [Date]<br>
+            <strong>Departure Date:</strong> [Date]<br>
+            <strong>Number of Nights:</strong> [X] nights<br>
+            <strong>Room Type:</strong> [Room Category]<br>
+            <strong>Rate:</strong> [Currency] [Amount] ++ per night<br>
+            <strong>Total Amount:</strong> [Currency] [Total] (incl. tax & service)<br>
+            <strong>Inclusions:</strong> Breakfast, Wi-Fi, etc.<br>
+            <strong>Cancellation Policy:</strong> Free cancellation until [Date]<br>
+            <strong>Payment Method:</strong> [Credit Card / Bank Transfer / On Arrival]<br><br>
+            Please present this confirmation letter upon check-in.<br><br>
+            We look forward to welcoming you to [Property Name]. Should you need any assistance, please do not hesitate to contact us.<br><br>
+            Sincerely,<br>
+            [Your Name]<br>
+            Reservations Department<br>
+            [Property Name]
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. RECONFIRMATION -->
+      <div class="email-card">
+        <div class="email-header">
+          <i class="fa-solid fa-rotate-right"></i> 3. Reconfirmation
+        </div>
+        <div class="email-body">
+          <p>Reconfirmation dikirim untuk mengkonfirmasi ulang reservasi atau meminta konfirmasi dari tamu sebelum kedatangan.</p>
+          <div class="email-example">
+            <strong>Contoh Reconfirmation Email:</strong><br><br>
+            <strong>Subject:</strong> Reservation Reconfirmation - [Guest Name] - [Property Name]<br><br>
+            Dear Mr./Ms. [Guest Last Name],<br><br>
+            Warmest greetings from [Property Name].<br><br>
+            We would like to reconfirm your upcoming reservation with us:<br><br>
+            <strong>Confirmation Number:</strong> [XXXXXX]<br>
+            <strong>Arrival Date:</strong> [Date]<br>
+            <strong>Departure Date:</strong> [Date]<br>
+            <strong>Room Type:</strong> [Room Category]<br><br>
+            Kindly confirm if there are any changes to your travel plans. Please let us know your estimated time of arrival so we can prepare for your arrival.<br><br>
+            Should you wish to add any special requests or preferences, please feel free to let us know.<br><br>
+            We look forward to welcoming you soon.<br><br>
+            Sincerely,<br>
+            [Your Name]<br>
+            Reservations Department<br>
+            [Property Name]
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. CANCELLATION -->
+      <div class="email-card">
+        <div class="email-header">
+          <i class="fa-solid fa-ban"></i> 4. Cancellation
+        </div>
+        <div class="email-body">
+          <p>Cancellation email dikirim untuk mengkonfirmasi pembatalan reservasi sesuai permintaan tamu.</p>
+          <div class="email-example">
+            <strong>Contoh Cancellation Email:</strong><br><br>
+            <strong>Subject:</strong> Reservation Cancellation Confirmation - [Guest Name] - [Confirmation Number]<br><br>
+            Dear Mr./Ms. [Guest Last Name],<br><br>
+            Warmest greetings from [Property Name].<br><br>
+            We acknowledge your request to cancel the following reservation:<br><br>
+            <strong>Confirmation Number:</strong> [XXXXXX]<br>
+            <strong>Original Arrival Date:</strong> [Date]<br>
+            <strong>Original Departure Date:</strong> [Date]<br>
+            <strong>Room Type:</strong> [Room Category]<br><br>
+            We hereby confirm that the above reservation has been cancelled as per your request.<br><br>
+            [If within free cancellation period:] No cancellation fee will be charged.<br>
+            [If outside free cancellation period:] A cancellation fee of [amount] will be charged as per the cancellation policy.<br><br>
+            We hope to have the opportunity to welcome you at [Property Name] in the future.<br><br>
+            Should you need any further assistance, please do not hesitate to contact us.<br><br>
+            Sincerely,<br>
+            [Your Name]<br>
+            Reservations Department<br>
+            [Property Name]
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-inner">
+      <div class="footer-brand"><span class="footer-logo-icon"><img src="logo/bintang-capella.png" alt="star"></span><span class="footer-logo-text">CHG <em>Reservations</em> Standards</span></div>
+      <p class="footer-property">Capella Ubud, Bali</p>
+      <p class="footer-note">Internal Use Only — Authorized Personnel</p>
+      <p class="footer-copy">&copy; 2025 Capella Hotel Group. All rights reserved.</p>
+    </div></div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => { const navbar = document.getElementById('navbar'); if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 20); });
+    document.querySelectorAll('.nav-link').forEach(link => { link.addEventListener('click', () => document.getElementById('navMenu')?.classList.remove('open')); });
+  </script>
+</body>
+</html>

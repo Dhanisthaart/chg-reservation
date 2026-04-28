@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHG – Aspire Excellence Program</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --gold: #B8974B;
+      --gold-light: #D4B26A;
+      --gold-deep: #8A6E30;
+      --ink: #1A1614;
+      --sand: #F7F3ED;
+      --sand-deep: #E5D9CE;
+      --white: #FDFAF7;
+      --font-serif: 'Playfair Display', serif;
+      --font-body: 'Jost', sans-serif;
+      --nav-h: 72px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-body); color: var(--ink); background: var(--sand); line-height: 1.6; padding-top: var(--nav-h); transition: margin-right 0.3s ease; }
+    body.sidebar-open { margin-right: 320px; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+
+    .navbar { position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h); background: var(--ink); z-index: 1000; border-bottom: 1px solid rgba(184,151,75,0.15); transition: right 0.3s ease; }
+    body.sidebar-open .navbar { right: 320px; }
+    .nav-inner { max-width: 1400px; margin: 0 auto; padding: 0 60px; height: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: 2px; color: var(--white); text-transform: uppercase; text-decoration: none; }
+    .nav-logo-mark img { width: 16px; height: auto; filter: brightness(0) invert(1); }
+    .nav-logo-text em { font-style: italic; color: var(--gold-light); }
+    .nav-menu { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-link { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(253,250,247,0.6); padding: 8px 16px; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+    .nav-link i { font-size: 10px; }
+    .nav-link:hover, .nav-link.active { color: var(--gold-light); }
+    .nav-logout { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(253,250,247,0.5); padding: 8px 16px; border: 1px solid rgba(184,151,75,0.3); margin-left: 8px; background: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .nav-logout i { font-size: 10px; }
+    .nav-logout:hover { color: var(--gold); border-color: var(--gold); }
+    .nav-toggle { display: none; background: none; border: none; color: var(--white); font-size: 18px; cursor: pointer; }
+    
+    .more-btn { background: none; border: none; color: rgba(253,250,247,0.6); font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; padding: 8px 12px; margin-right: 4px; display: flex; align-items: center; gap: 6px; transition: color 0.2s; font-family: var(--font-body); }
+    .more-btn i { font-size: 10px; }
+    .more-btn:hover { color: var(--gold-light); }
+    
+    @media (max-width: 1100px) {
+      .nav-toggle { display: block; }
+      .nav-menu { display: none; position: absolute; top: var(--nav-h); left: 0; right: 0; background: var(--ink); flex-direction: column; padding: 16px 0; gap: 0; }
+      .nav-menu.open { display: flex; }
+      .nav-link { padding: 12px 24px; width: 100%; }
+      .nav-logout { margin: 8px 24px; width: calc(100% - 48px); justify-content: center; }
+      .more-btn { display: none; }
+      .nav-inner { padding: 0 24px; }
+    }
+
+    .sidebar { position: fixed; top: 0; right: -320px; width: 320px; height: 100vh; background: var(--ink); z-index: 1001; transition: right 0.3s ease; overflow-y: auto; box-shadow: -4px 0 20px rgba(0,0,0,0.3); }
+    body.sidebar-open .sidebar { right: 0; }
+    .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(184,151,75,0.2); }
+    .sidebar-header h3 { font-family: var(--font-serif); color: var(--gold-light); font-size: 20px; }
+    .close-sidebar { background: none; border: none; color: var(--white); font-size: 24px; cursor: pointer; transition: color 0.2s; }
+    .close-sidebar:hover { color: var(--gold-light); }
+    .sidebar-menu { list-style: none; padding: 16px 0; }
+    .sidebar-menu li { border-bottom: 1px solid rgba(184,151,75,0.1); }
+    .sidebar-menu li a { display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: rgba(253,250,247,0.7); text-decoration: none; font-size: 14px; transition: all 0.2s; }
+    .sidebar-menu li a i { width: 24px; color: var(--gold-light); font-size: 16px; }
+    .sidebar-menu li a:hover { background: rgba(184,151,75,0.1); color: var(--white); padding-left: 28px; }
+    .sidebar-menu .sidebar-logout { margin-top: 20px; border-top: 1px solid rgba(184,151,75,0.2); }
+    .sidebar-menu .sidebar-logout button { width: 100%; background: none; border: none; display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: rgba(253,250,247,0.7); font-size: 14px; cursor: pointer; transition: all 0.2s; text-align: left; }
+    .sidebar-menu .sidebar-logout button i { width: 24px; color: var(--gold-light); }
+    .sidebar-menu .sidebar-logout button:hover { background: rgba(184,151,75,0.1); color: var(--white); padding-left: 28px; }
+
+    .page-hero {
+      position: relative;
+      height: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .page-hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('logo/Background-Call-Atas.jpg') center/cover no-repeat;
+      filter: blur(6px);
+      transform: scale(1.05);
+    }
+    .page-hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.5) 100%);
+    }
+    .page-hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      animation: fadeInUp 0.8s ease;
+    }
+    .ornament-row { display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px; }
+    .ornament-row .ornament-line { width: 60px; height: 1px; background: var(--gold); opacity: 0.8; }
+    .page-hero-eyebrow { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold-light); margin-bottom: 16px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+    .page-hero-title { font-size: clamp(48px, 6vw, 72px); color: var(--white); font-weight: 500; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .page-hero-title em { color: var(--gold-light); font-style: italic; }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 60px; }
+    @media (max-width: 1024px) { .container { padding: 0 40px; } }
+    @media (max-width: 768px) { .container { padding: 0 24px; } }
+
+    .page-main { background: var(--sand); }
+    .page-main .container { padding-top: 70px; padding-bottom: 80px; }
+
+    .section-card { background: var(--white); padding: 40px 48px; margin-bottom: 48px; border-left: 6px solid var(--gold); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .section-card h2 { font-size: 32px; font-family: var(--font-serif); color: var(--ink); margin-bottom: 28px; font-weight: 600; }
+    .section-card h2 i { color: var(--gold); margin-right: 12px; }
+    .section-card p { font-size: 18px; color: var(--ink); margin-bottom: 24px; line-height: 1.7; text-align: justify; }
+
+    .criteria-table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 16px; }
+    .criteria-table th { background: var(--ink); color: var(--gold-light); padding: 14px 20px; text-align: left; font-weight: 700; text-transform: uppercase; font-size: 13px; border-bottom: 2px solid var(--gold); }
+    .criteria-table td { padding: 14px 20px; border-bottom: 1px solid var(--sand-deep); color: var(--ink); vertical-align: top; font-size: 15px; }
+    .criteria-table tr:last-child td { border-bottom: none; }
+    .criteria-table tr:hover td { background: var(--sand); }
+    .criteria-table td:first-child { font-weight: 700; width: 60px; text-align: center; background: var(--sand); }
+
+    /* Search Bar */
+    .search-container { margin-bottom: 32px; }
+    .search-box { display: flex; align-items: center; background: var(--white); border: 1px solid var(--sand-deep); border-radius: 50px; padding: 8px 20px; transition: all 0.3s; }
+    .search-box:focus-within { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(184,151,75,0.2); }
+    .search-box i { color: var(--gold-light); font-size: 18px; margin-right: 12px; }
+    .search-box input { flex: 1; border: none; outline: none; font-size: 16px; font-family: var(--font-body); background: transparent; color: var(--ink); }
+    .search-box input::placeholder { color: var(--sand-deep); }
+    .search-box .clear-search { background: none; border: none; color: var(--sand-deep); cursor: pointer; font-size: 18px; padding: 4px 8px; transition: color 0.2s; }
+    .search-box .clear-search:hover { color: var(--gold); }
+    .search-stats { font-size: 13px; color: var(--gold-deep); margin-top: 8px; text-align: right; }
+    .search-highlight { background-color: rgba(184,151,75,0.3); border-radius: 2px; padding: 0 2px; }
+
+    .in-depth-card { background: var(--white); padding: 32px 40px; margin-bottom: 32px; border: 1px solid var(--sand-deep); border-radius: 4px; transition: all 0.3s; }
+    .in-depth-card.search-hidden { display: none; }
+    .in-depth-card.search-matched { border-left: 4px solid var(--gold); }
+    .in-depth-card h3 { font-size: 22px; font-family: var(--font-serif); color: var(--gold); margin-bottom: 20px; border-left: 3px solid var(--gold); padding-left: 16px; }
+    .in-depth-card h4 { font-size: 18px; color: var(--ink); margin: 16px 0 8px 0; font-weight: 600; }
+    .in-depth-card p { font-size: 16px; margin-bottom: 12px; line-height: 1.6; text-align: justify; }
+    .example-box { background: var(--sand); padding: 16px 20px; border-left: 4px solid var(--gold); margin: 16px 0; font-style: italic; }
+    .bullet-list { list-style: none; margin: 12px 0; }
+    .bullet-list li { padding: 6px 0; padding-left: 24px; position: relative; font-size: 16px; }
+    .bullet-list li:before { content: "•"; color: var(--gold); position: absolute; left: 0; font-weight: bold; }
+
+    .criteria-nav { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 2px solid var(--gold-light); }
+    .criteria-tab { background: var(--white); border: 1px solid var(--sand-deep); padding: 10px 20px; border-radius: 40px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; }
+    .criteria-tab:hover { background: var(--gold-light); color: var(--white); border-color: var(--gold-light); }
+    .criteria-tab.active { background: var(--gold); color: var(--white); border-color: var(--gold); }
+
+    .criteria-section { display: none; }
+    .criteria-section.active { display: block; }
+
+    .footer { background: var(--ink); padding: 60px 0 40px; border-top: 1px solid rgba(184,151,75,0.15); }
+    .footer-inner { text-align: center; }
+    .footer-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
+    .footer-logo-icon img { width: 18px; height: auto; filter: brightness(0) invert(1); }
+    .footer-logo-text { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--white); }
+    .footer-logo-text em { color: var(--gold-light); }
+    .footer-property { font-size: 12px; color: var(--gold-light); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+    .footer-note { font-size: 11px; color: rgba(253,250,247,0.3); margin-bottom: 8px; }
+    .footer-copy { font-size: 11px; color: rgba(253,250,247,0.25); }
+
+    @media (max-width: 768px) {
+      .section-card { padding: 28px; }
+      .section-card h2 { font-size: 26px; }
+      .criteria-table td, .criteria-table th { padding: 8px 12px; font-size: 13px; }
+      .in-depth-card { padding: 20px 24px; }
+      .in-depth-card h3 { font-size: 19px; }
+      .criteria-tab { padding: 6px 14px; font-size: 12px; }
+      body.sidebar-open { margin-right: 0; }
+      body.sidebar-open .navbar { right: 0; }
+      .sidebar { width: 280px; right: -280px; }
+      body.sidebar-open .sidebar { right: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+    function checkAuth() { const session = localStorage.getItem('chg_auth_session'); if (!session) window.location.replace('index.html'); }
+    function handleLogout() { localStorage.removeItem('chg_auth_session'); window.location.replace('index.html'); }
+    function toggleNav() { document.getElementById('navMenu').classList.toggle('open'); }
+    checkAuth();
+
+    function openSidebar() { document.body.classList.add('sidebar-open'); }
+    function closeSidebar() { document.body.classList.remove('sidebar-open'); }
+
+    let currentSearchTerm = '';
+
+    function showCriteria(num) {
+      document.querySelectorAll('.criteria-section').forEach(section => section.classList.remove('active'));
+      document.querySelectorAll('.criteria-tab').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(`criteria-${num}`).classList.add('active');
+      document.querySelector(`.criteria-tab[data-criteria="${num}"]`).classList.add('active');
+      if (currentSearchTerm) {
+        performSearch(currentSearchTerm);
+      }
+    }
+
+    function performSearch(term) {
+      currentSearchTerm = term;
+      const currentSection = document.querySelector('.criteria-section.active');
+      if (!currentSection) return;
+      
+      const cards = currentSection.querySelectorAll('.in-depth-card');
+      let matchCount = 0;
+      
+      if (term === '') {
+        cards.forEach(card => {
+          card.classList.remove('search-hidden', 'search-matched');
+          card.style.display = 'block';
+        });
+        document.getElementById('searchStats').textContent = '';
+        return;
+      }
+      
+      const lowerTerm = term.toLowerCase();
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(lowerTerm)) {
+          card.classList.remove('search-hidden');
+          card.classList.add('search-matched');
+          card.style.display = 'block';
+          matchCount++;
+        } else {
+          card.classList.add('search-hidden');
+          card.classList.remove('search-matched');
+          card.style.display = 'none';
+        }
+      });
+      
+      const statsText = matchCount === 1 ? '1 criteria found' : `${matchCount} criteria found`;
+      document.getElementById('searchStats').textContent = matchCount > 0 ? statsText : 'No criteria found';
+    }
+
+    function clearSearch() {
+      currentSearchTerm = '';
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchStats').textContent = '';
+      const currentSection = document.querySelector('.criteria-section.active');
+      if (currentSection) {
+        const cards = currentSection.querySelectorAll('.in-depth-card');
+        cards.forEach(card => {
+          card.classList.remove('search-hidden', 'search-matched');
+          card.style.display = 'block';
+        });
+      }
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', debounce((e) => performSearch(e.target.value), 300));
+      }
+    });
+  </script>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="home.html" class="nav-logo"><span class="nav-logo-mark"><img src="logo/bintang-capella.png" alt="star"></span><span class="nav-logo-text">CHG <em>Reservations</em></span></a>
+      <button class="nav-toggle" onclick="toggleNav()"><i class="fa-solid fa-bars"></i></button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="home.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a></li>
+        <li><a href="mission.html" class="nav-link"><i class="fa-solid fa-star"></i> Mission</a></li>
+        <li><a href="data-entry.html" class="nav-link"><i class="fa-solid fa-database"></i> Data Entry</a></li>
+        <li><a href="vip.html" class="nav-link"><i class="fa-solid fa-crown"></i> VIP Code</a></li>
+        <li><a href="blacklist.html" class="nav-link"><i class="fa-solid fa-ban"></i> Blacklist</a></li>
+        <li><a href="aspire.html" class="nav-link active"><i class="fa-solid fa-phone"></i> Aspire</a></li>
+        <li><a href="revenue.html" class="nav-link"><i class="fa-solid fa-chart-line"></i> Revenue</a></li>
+        <li><button class="more-btn" onclick="openSidebar()"><i class="fa-solid fa-bars"></i> More</button></li>
+        <li><button class="nav-logout" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header"><h3>Menu</h3><button class="close-sidebar" onclick="closeSidebar()">&times;</button></div>
+    <ul class="sidebar-menu">
+      <li><a href="home.html"><i class="fa-solid fa-house"></i> Home</a></li>
+      <li><a href="mission.html"><i class="fa-solid fa-star"></i> Mission</a></li>
+      <li><a href="data-entry.html"><i class="fa-solid fa-database"></i> Data Entry</a></li>
+      <li><a href="vip.html"><i class="fa-solid fa-crown"></i> VIP Code</a></li>
+      <li><a href="blacklist.html"><i class="fa-solid fa-ban"></i> Blacklist</a></li>
+      <li><a href="aspire.html"><i class="fa-solid fa-phone"></i> Aspire</a></li>
+      <li><a href="revenue.html"><i class="fa-solid fa-chart-line"></i> Revenue</a></li>
+      <li><a href="market.html"><i class="fa-solid fa-chart-pie"></i> Market</a></li>
+      <li><a href="opera-cloud.html"><i class="fa-solid fa-cloud"></i> Opera Cloud</a></li>
+      <li><a href="profile-notes.html"><i class="fa-solid fa-note-sticky"></i> Profile Notes</a></li>
+      <li><a href="emails.html"><i class="fa-solid fa-envelope"></i> Emails</a></li>
+      <li class="sidebar-logout"><button onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></li>
+    </ul>
+  </div>
+
+  <section class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+      <div class="ornament-row">
+        <div class="ornament-line"></div>
+        <img src="logo/bintang-capella.png" alt="star" style="width: 24px; height: auto; filter: brightness(0) invert(1);">
+        <div class="ornament-line"></div>
+      </div>
+      <p class="page-hero-eyebrow">Call Handling Excellence</p>
+      <h1 class="page-hero-title">ASPIRE <em>Test Call</em></h1>
+    </div>
+  </section>
+
+  <main class="page-main">
+    <div class="container">
+
+      <!-- Introduction -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-circle-info"></i> Reservations Excellence Program - ASPIRE</h2>
+        <p>Capella Hotels Group commitment to excellence is undisputable and we are continuously looking for ways to improve our products, services or processed because we believe continuous improvement process is key.</p>
+        <p>Reservations Excellence Program is a simple process for use to ensure just that. It is a Reservations Test Call program which will enable us to:</p>
+        <ul class="bullet-list">
+          <li><strong>Maximized Conversions</strong> - While we pay a lot of focus on website conversions, same amount of effort should be spent on our phone conversions.</li>
+          <li><strong>Branding</strong> - Represents the image of the hotel. Set guests expectation of the perceived level of service provided.</li>
+          <li><strong>Improving Efficiency</strong> - Quality assurance. Review processes, service enhancement and training identification.</li>
+          <li><strong>Optimized Revenue</strong> - Upsell opportunity. Drive incremental revenue.</li>
+        </ul>
+        <p>Reservations test calls will be conducted by ASPIRE. Minimum 2 calls will be conducted per month per property. Standards used are Forbes and LQA customised with other requirement by CHG such as the questions on Capella Discovery Loyalty membership.</p>
+      </div>
+
+      <!-- Criteria Summary Table -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-table-list"></i> ASPIRE Test Call Criteria</h2>
+        <div style="overflow-x: auto;">
+          <table class="criteria-table">
+            <thead><tr><th>#</th><th>Criteria</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Answer within 3 rings or 10 seconds with appropriate greeting</td></tr>
+              <tr><td>2</td><td>Obtain caller's name and use it 3 times minimum</td></tr>
+              <tr><td>3</td><td>Telephone conversation is calm and clear, use headset</td></tr>
+              <tr><td>4</td><td>Ask permission before placing guest on hold</td></tr>
+              <tr><td>5</td><td>No hold longer than 30 seconds without offering call-back</td></tr>
+              <tr><td>6</td><td>Clarify if guest had stayed before</td></tr>
+              <tr><td>7</td><td>Offer alternative dates or room options if unavailable</td></tr>
+              <tr><td>8</td><td>Ask open-ended question to uncover needs and purpose</td></tr>
+              <tr><td>9</td><td>Transitional phrase reinforcing you can help</td></tr>
+              <tr><td>10</td><td>Provide hotel introduction and recommendations</td></tr>
+              <tr><td>11</td><td>Clarify personal preferences (bed, smoking, etc.)</td></tr>
+              <tr><td>12</td><td>Present 2 choices of room types before rates</td></tr>
+              <tr><td>13</td><td>Describe physical elements and benefits by room type</td></tr>
+              <tr><td>14</td><td>Inquire about DISCOVERY membership before rate quote</td></tr>
+              <tr><td>15</td><td>Present rate plan or package that meets needs</td></tr>
+              <tr><td>16</td><td>Clearly state room rate with inclusions/exclusions</td></tr>
+              <tr><td>17</td><td>Confidently ask for sale</td></tr>
+              <tr><td>18</td><td>Obtain caller's contact details</td></tr>
+              <tr><td>19</td><td>Emphasise value, explain deposit and cancellation policies</td></tr>
+              <tr><td>20</td><td>Advise payment options and obtain preference</td></tr>
+              <tr><td>21</td><td>Ascertain ETA, flight details, advise check-in time</td></tr>
+              <tr><td>22</td><td>Provide directions/transportation options with costs</td></tr>
+              <tr><td>23</td><td>Offer hotel services (dinner, spa, programmes)</td></tr>
+              <tr><td>24</td><td>Offer reservation confirmation number</td></tr>
+              <tr><td>25</td><td>Advise pre-arrival email will be sent</td></tr>
+              <tr><td>26</td><td>Repeat booking details for confirmation</td></tr>
+              <tr><td>27</td><td>Thank guest and close with polite remark</td></tr>
+              <tr><td>28</td><td>Confirmation email is accurate</td></tr>
+              <tr><td>29</td><td>Confirmation offered and received within 2 hours</td></tr>
+              <tr><td>30</td><td>Guest is fully prepared for stay with positive anticipation</td></tr>
+              <tr><td>31</td><td>Highly articulate, avoid slang and phrase-fragments</td></tr>
+              <tr><td>32</td><td>Polite, gracious tone and appropriate pace</td></tr>
+              <tr><td>33</td><td>Genuine interest and concern for the guest</td></tr>
+              <tr><td>34</td><td>Lead conversation, demonstrate anticipatory service</td></tr>
+              <tr><td>35</td><td>Service handled without excessive delays or interruptions</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- In-depth Criteria with Search Bar -->
+      <div class="section-card">
+        <h2><i class="fa-solid fa-magnifying-glass"></i> In-depth Criteria</h2>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+          <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search criteria... (e.g., greeting, DISCOVERY, confirmation, hold, rate)">
+            <button class="clear-search" onclick="clearSearch()"><i class="fa-solid fa-times-circle"></i></button>
+          </div>
+          <div class="search-stats" id="searchStats"></div>
+        </div>
+
+        <div class="criteria-nav">
+          <div class="criteria-tab active" data-criteria="1" onclick="showCriteria(1)">1-5</div>
+          <div class="criteria-tab" data-criteria="2" onclick="showCriteria(2)">6-10</div>
+          <div class="criteria-tab" data-criteria="3" onclick="showCriteria(3)">11-15</div>
+          <div class="criteria-tab" data-criteria="4" onclick="showCriteria(4)">16-20</div>
+          <div class="criteria-tab" data-criteria="5" onclick="showCriteria(5)">21-25</div>
+          <div class="criteria-tab" data-criteria="6" onclick="showCriteria(6)">26-30</div>
+          <div class="criteria-tab" data-criteria="7" onclick="showCriteria(7)">31-35</div>
+        </div>
+
+        <!-- Criteria 1-5 -->
+        <div id="criteria-1" class="criteria-section active">
+          <div class="in-depth-card"><h3>1. Answer within 3 rings or 10 seconds</h3><p><strong>What:</strong> Answer promptly with a warm, branded greeting and clear self‑identification.</p><p><strong>Why:</strong> First impressions shape perceived luxury and reduce call abandonment.</p><p><strong>How:</strong> Smile before answering, use full brand signature and offer assistance immediately.</p><div class="example-box"><strong>Example:</strong> "Good morning. Thank you for calling (property), this is Dayu from reservations, how may I assist you?"</div></div>
+          <div class="in-depth-card"><h3>2. Obtain caller's name and use it 3 times</h3><p><strong>What:</strong> Politely ask how to address the caller; use their name naturally at least three times.</p><p><strong>Why:</strong> Personalization builds rapport and confidence.</p><p><strong>How:</strong> Ask early, use name 3-5 times naturally, confirm spelling once.</p><div class="example-box"><strong>Example:</strong> "May I know who I am speaking with? Thank you Ms. Smith."</div></div>
+          <div class="in-depth-card"><h3>3. Calm and clear conversation, use headset</h3><p><strong>What:</strong> Deliver noise‑free, articulate conversation at measured pace.</p><p><strong>Why:</strong> Audio quality reduces errors and supports luxury tone.</p><p><strong>How:</strong> Mute notifications, minimize background noise.</p><div class="example-box"><strong>Example:</strong> "Well noted. Please give me a second to record your details."</div></div>
+          <div class="in-depth-card"><h3>4. Ask permission before hold</h3><p><strong>What:</strong> Seek consent, give reason, set expectation before holding.</p><p><strong>Why:</strong> Respect reduces frustration and keeps guest informed.</p><p><strong>How:</strong> Ask permission + state purpose + give estimated time.</p><div class="example-box"><strong>Example:</strong> "Mr. Smith, may I place you on a brief hold while I check availability?"</div></div>
+          <div class="in-depth-card"><h3>5. No hold longer than 30 seconds without call-back</h3><p><strong>What:</strong> Return at ~30 seconds and offer call-back option.</p><p><strong>Why:</strong> Respects guest's time and prevents perceived neglect.</p><p><strong>How:</strong> Return with options: continue holding or call-back.</p><div class="example-box"><strong>Example:</strong> "This is taking longer. Would you prefer I call you back within five minutes?"</div></div>
+        </div>
+
+        <!-- Criteria 6-10 -->
+        <div id="criteria-2" class="criteria-section">
+          <div class="in-depth-card"><h3>6. Clarify if guest stayed before</h3><p><strong>What:</strong> Determine first-time vs returning and tailor recognition.</p><p><strong>Why:</strong> Recognition is hallmark of ultra-luxury and increases loyalty.</p><p><strong>How:</strong> Ask early, offer warm welcome or welcome back.</p><div class="example-box"><strong>First time:</strong> "Thank you for choosing our hotel!"<br><strong>Returning:</strong> "We would be happy to welcome you back!"</div></div>
+          <div class="in-depth-card"><h3>7. Offer alternatives if unavailable</h3><p><strong>What:</strong> Present solvable options (alternate dates/room types).</p><p><strong>Why:</strong> Keeps momentum and salvages conversion.</p><p><strong>How:</strong> Offer 2-3 alternate options, always provide alternative.</p><div class="example-box"><strong>Example:</strong> "While requested dates are full, I can offer [alt dates] or [alternative room]."</div></div>
+          <div class="in-depth-card"><h3>8. Ask open-ended question</h3><p><strong>What:</strong> Understand purpose, occasion, and success criteria.</p><p><strong>Why:</strong> Relevant curation increases satisfaction and upsell.</p><p><strong>How:</strong> Ask 1-2 open-ended questions, echo key details.</p><div class="example-box"><strong>Example:</strong> "How can we make this anniversary most memorable for you?"</div></div>
+          <div class="in-depth-card"><h3>9. Transitional phrase reinforcing you can help</h3><p><strong>What:</strong> Reassure guest that you can and will help.</p><p><strong>Why:</strong> Builds confidence and emotional ease.</p><p><strong>How:</strong> Use sincere, polite transitions to signal ownership.</p><div class="example-box"><strong>Example:</strong> "It would be my pleasure to see what we have available."</div></div>
+          <div class="in-depth-card"><h3>10. Hotel introduction and recommendations</h3><p><strong>What:</strong> Describe facilities concisely and recommend what fits needs.</p><p><strong>Why:</strong> Demonstrates expertise and value.</p><p><strong>How:</strong> Map features to needs, for return guests highlight updates.</p><div class="example-box"><strong>Example:</strong> "All rates include: 24hrs Essentialist service, complimentary mini bar."</div></div>
+        </div>
+
+        <!-- Criteria 11-15 -->
+        <div id="criteria-3" class="criteria-section">
+          <div class="in-depth-card"><h3>11. Clarify personal preferences</h3><p><strong>What:</strong> Capture bed, view, dietary, accessibility preferences.</p><p><strong>Why:</strong> Enables anticipatory service and seamless planning.</p><p><strong>How:</strong> Ask open questions, record precisely in profile.</p><div class="example-box"><strong>Example:</strong> "Do you have any preferences or dietary restrictions we should know?"</div></div>
+          <div class="in-depth-card"><h3>12. Present 2 choices of room types before rates</h3><p><strong>What:</strong> Offer best-fit and elevated alternative; lead with benefits.</p><p><strong>Why:</strong> Guests buy benefits; increases conversion and satisfaction.</p><p><strong>How:</strong> Curate two strong options, use emotive benefit language.</p><div class="example-box"><strong>Example:</strong> "For your honeymoon, we recommend Deluxe Double or Junior Suite King."</div></div>
+          <div class="in-depth-card"><h3>13. Describe physical elements by room type</h3><p><strong>What:</strong> Translate features into outcomes (space, privacy, views).</p><p><strong>Why:</strong> Enhances perceived value and sets expectations.</p><p><strong>How:</strong> Use accurate size/feature details, tie to guest's purpose.</p><div class="example-box"><strong>Example:</strong> "Deluxe King: 50sqm, city view, luxury bathroom with tub and rainfall shower."</div></div>
+          <div class="in-depth-card"><h3>14. Inquire about DISCOVERY membership before rate quote</h3><p><strong>What:</strong> Check DISCOVERY status before quoting; recognize members.</p><p><strong>Why:</strong> Drives recognition, value perception, and loyalty capture.</p><p><strong>How:</strong> Ask early, if yes thank and offer member rate, if no offer enrollment.</p><div class="example-box"><strong>Example:</strong> "We are glad to inform you that DISCOVERY Member rate is available with 10% OFF."</div></div>
+          <div class="in-depth-card"><h3>15. Present rate plan or package that meets needs</h3><p><strong>What:</strong> Match targeted package/promotion to needs with flexible backup.</p><p><strong>Why:</strong> Increases relevance and revenue.</p><p><strong>How:</strong> Recommend best-fit promotion + flexible alternative.</p><div class="example-box"><strong>Example:</strong> "We have a special promotion. For flexible rate, we also have Best Available Rate."</div></div>
+        </div>
+
+        <!-- Criteria 16-20 -->
+        <div id="criteria-4" class="criteria-section">
+          <div class="in-depth-card"><h3>16. Clearly state room rate with inclusions</h3><p><strong>What:</strong> Quote nightly rate, currency, taxes, and inclusions.</p><p><strong>Why:</strong> Prevents confusion and future disputes.</p><p><strong>How:</strong> State currency and ++, confirm what's included.</p><div class="example-box"><strong>Example:</strong> "Daily rate is USD 500 + tax per night. Total for 3 nights is USD 1,650 including tax."</div></div>
+          <div class="in-depth-card"><h3>17. Confidently ask for sale</h3><p><strong>What:</strong> Close decisively and politely.</p><p><strong>Why:</strong> Demonstrates professionalism and consultative salesmanship.</p><p><strong>How:</strong> Ask directly to proceed. If no, offer alternatives.</p><div class="example-box"><strong>Example:</strong> "Would you like me to proceed with the reservation?"</div></div>
+          <div class="in-depth-card"><h3>18. Obtain caller's contact details</h3><p><strong>What:</strong> Collect accurate contact points for confirmation.</p><p><strong>Why:</strong> Ensures deliverability and continuity of service.</p><p><strong>How:</strong> Ask for best contact number and email.</p><div class="example-box"><strong>Example:</strong> "May I have your email address and phone number to send the confirmation?"</div></div>
+          <div class="in-depth-card"><h3>19. Explain deposit and cancellation policies</h3><p><strong>What:</strong> Outline deposit timing and cancellation penalties.</p><p><strong>Why:</strong> Transparency builds trust and avoids disputes.</p><p><strong>How:</strong> State deposit rules, clarify cancel-by date and penalties.</p><div class="example-box"><strong>Example:</strong> "Free cancellation until 6pm local time, 2 days prior to arrival. Credit card required to guarantee."</div></div>
+          <div class="in-depth-card"><h3>20. Advise payment options</h3><p><strong>What:</strong> Offer accepted methods and capture guarantee.</p><p><strong>Why:</strong> Convenience and security during booking.</p><p><strong>How:</strong> Offer accepted card types, use secure capture.</p><div class="example-box"><strong>Example:</strong> "May I have your credit card details to guarantee the reservation?"</div></div>
+        </div>
+
+        <!-- Criteria 21-25 -->
+        <div id="criteria-5" class="criteria-section">
+          <div class="in-depth-card"><h3>21. Ascertain ETA, flight details, check-in time</h3><p><strong>What:</strong> Capture arrival time/flight; set check-in expectations.</p><p><strong>Why:</strong> Enables smooth arrival and better room readiness.</p><p><strong>How:</strong> Ask for ETA, flight details, offer transfers.</p><div class="example-box"><strong>Example:</strong> "Do you have your flight details? Check-in is at 3pm, check-out at 12pm."</div></div>
+          <div class="in-depth-card"><h3>22. Provide transportation options with costs</h3><p><strong>What:</strong> Give clear transfer options with pricing; offer to arrange.</p><p><strong>Why:</strong> Reduces travel stress and adds convenience.</p><p><strong>How:</strong> Present hotel car with pricing, offer to book now.</p><div class="example-box"><strong>Example:</strong> "May we assist with transportation? Return airport transfer is available at USD 150."</div></div>
+          <div class="in-depth-card"><h3>23. Offer hotel services (dinner, spa, programmes)</h3><p><strong>What:</strong> Recommend 1-2 relevant enhancements.</p><p><strong>Why:</strong> Elevates stay and strengthens attachment to property.</p><p><strong>How:</strong> Tie suggestions to occasion, offer to book.</p><div class="example-box"><strong>Example:</strong> "Would you like me to arrange a dinner or spa reservation during your stay?"</div></div>
+          <div class="in-depth-card"><h3>24. Offer reservation confirmation number</h3><p><strong>What:</strong> Share confirmation number verbally and in email.</p><p><strong>Why:</strong> Provides clear reference for follow-up.</p><p><strong>How:</strong> Read clearly, invite guest to note it down.</p><div class="example-box"><strong>Example:</strong> "Would you like to note your confirmation number? It is 12345678."</div></div>
+          <div class="in-depth-card"><h3>25. Advise pre-arrival email will be sent</h3><p><strong>What:</strong> Set expectation for personalized pre-arrival contact.</p><p><strong>Why:</strong> Encourages engagement and reduces last-minute friction.</p><p><strong>How:</strong> Advise timeline for confirmation and pre-arrival outreach.</p><div class="example-box"><strong>Example:</strong> "Our Culturist will contact you closer to arrival for pre-arrival arrangements."</div></div>
+        </div>
+
+        <!-- Criteria 26-30 -->
+        <div id="criteria-6" class="criteria-section">
+          <div class="in-depth-card"><h3>26. Repeat booking details for confirmation</h3><p><strong>What:</strong> Recap dates, room, rate, inclusions, payment, cancellation.</p><p><strong>Why:</strong> Ensures accuracy and guest confidence.</p><p><strong>How:</strong> Structure recap clearly, pause for corrections.</p><div class="example-box"><strong>Example:</strong> "We have a booking from [date] to [date] in Deluxe room with total price..."</div></div>
+          <div class="in-depth-card"><h3>27. Thank guest and close with polite remark</h3><p><strong>What:</strong> End with sincere thanks, offer further help, restate name.</p><p><strong>Why:</strong> Leaves strong final impression of care.</p><p><strong>How:</strong> Ask if anything else needed, use guest's name, express anticipation.</p><div class="example-box"><strong>Example:</strong> "Thank you Ms. Smith. We look forward to welcoming you."</div></div>
+          <div class="in-depth-card"><h3>28. Confirmation email is accurate</h3><p><strong>What:</strong> Email mirrors call recap precisely.</p><p><strong>Why:</strong> Prevents disputes; reinforces trust.</p><p><strong>How:</strong> Use approved template, proofread all details.</p></div>
+          <div class="in-depth-card"><h3>29. Confirmation within 2 hours</h3><p><strong>What:</strong> Written confirmation dispatched within two hours.</p><p><strong>Why:</strong> Reduces anxiety and cements commitment.</p><p><strong>How:</strong> Adhere to ≤2-hour, monitor pending confirmations.</p><div class="example-box"><strong>Example:</strong> "Please expect your confirmation letter within 2 hours."</div></div>
+          <div class="in-depth-card"><h3>30. Guest fully prepared with positive anticipation</h3><p><strong>What:</strong> Call equips guest with clarity and positive anticipation.</p><p><strong>Why:</strong> Drives satisfaction and reduces queries.</p><p><strong>How:</strong> Provide clear next steps, key contacts, relevant updates.</p><div class="example-box"><strong>Example:</strong> "Our team will conduct a courtesy call 14 days prior to your arrival."</div></div>
+        </div>
+
+        <!-- Criteria 31-35 -->
+        <div id="criteria-7" class="criteria-section">
+          <div class="in-depth-card"><h3>31. Highly articulate, avoid slang</h3><p><strong>What:</strong> Use professional vocabulary and full sentences.</p><p><strong>Why:</strong> Preserves ultra-luxury tone and clarity.</p><p><strong>How:</strong> Replace slang with polished alternatives, avoid filler words.</p><div class="example-box"><strong>Example:</strong> "Certainly, Mr. Smith. I will be pleased to check that for you."</div></div>
+          <div class="in-depth-card"><h3>32. Polite, gracious tone and pace</h3><p><strong>What:</strong> Maintain gentle cadence and empathetic tone.</p><p><strong>Why:</strong> Creates emotional comfort and reduces friction.</p><p><strong>How:</strong> Mirror guest's pace, use "please," "thank you," "my pleasure."</p><div class="example-box"><strong>Example:</strong> "My pleasure, Mr. Smith. Thank you for your patience."</div></div>
+          <div class="in-depth-card"><h3>33. Genuine interest and concern</h3><p><strong>What:</strong> Acknowledge context and celebrate sentiments.</p><p><strong>Why:</strong> Builds emotional loyalty beyond transaction.</p><p><strong>How:</strong> Congratulate appropriately, demonstrate active listening.</p><div class="example-box"><strong>Example:</strong> "Congratulations on your wedding! It's wonderful to have you here for your honeymoon."</div></div>
+          <div class="in-depth-card"><h3>34. Lead conversation, anticipatory service</h3><p><strong>What:</strong> Guide call with expertise; anticipate adjacent needs.</p><p><strong>Why:</strong> Guests expect confident advisor who reduces decision effort.</p><p><strong>How:</strong> Use summarize → recommend → confirm pattern.</p><div class="example-box"><strong>Example:</strong> "Knowing your trip, we recommend Deluxe Double. May I proceed?"</div></div>
+          <div class="in-depth-card"><h3>35. Service without excessive delays</h3><p><strong>What:</strong> Call flows smoothly; tasks handled efficiently.</p><p><strong>Why:</strong> Signals mastery and respect for guest's time.</p><p><strong>How:</strong> Use templates, have rate grids ready, offer call-back if delays.</p><div class="example-box"><strong>Example:</strong> "Please give me a moment to record your details. Thank you for your patience."</div></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container"><div class="footer-inner">
+      <div class="footer-brand"><span class="footer-logo-icon"><img src="logo/bintang-capella.png" alt="star"></span><span class="footer-logo-text">CHG <em>Reservations</em> Standards</span></div>
+      <p class="footer-property">Capella Ubud, Bali</p>
+      <p class="footer-note">Internal Use Only — Authorized Personnel</p>
+      <p class="footer-copy">&copy; 2025 Capella Hotel Group. All rights reserved.</p>
+    </div></div>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => { const navbar = document.getElementById('navbar'); if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 20); });
+    document.querySelectorAll('.nav-link').forEach(link => { link.addEventListener('click', () => document.getElementById('navMenu')?.classList.remove('open')); });
+  </script>
+</body>
+</html>
